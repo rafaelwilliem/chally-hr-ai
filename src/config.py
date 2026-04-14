@@ -1,5 +1,4 @@
 import os
-from pathlib import rpath
 from dotenv import load_dotenv
 
 # Load .env file jika ada
