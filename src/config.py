@@ -12,10 +12,13 @@ CONTEXT_DIR = os.path.join(DATA_DIR, "context")
 
 # Konfigurasi AI
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-MODEL_NAME = "gemini-1.5-flash"
+MODEL_NAME = "gemini-2.5-flash-lite"
 
 def ensure_dirs():
     """Memastikan semua direktori yang diperlukan ada."""
     for d in [TRANSCRIPT_DIR, CONTEXT_DIR]:
         if not os.path.exists(d):
             os.makedirs(d)
+
+# Jalankan pemastian direktori
+ensure_dirs()

@@ -56,10 +56,13 @@ def main_menu() -> None:
         
         if choice == "1":
             start_interview()
+            Prompt.ask("\n[dim]Press Enter to return to menu[/dim]", show_choices=False, default="")
         elif choice == "2":
             show_history()
+            Prompt.ask("\n[dim]Press Enter to return to menu[/dim]", show_choices=False, default="")
         elif choice == "3":
             run_analytics()
+            Prompt.ask("\n[dim]Press Enter to return to menu[/dim]", show_choices=False, default="")
         elif choice == "0":
             console.print("[bold green]Goodbye![/bold green]")
             sys.exit(0)

@@ -9,7 +9,7 @@ if sys.platform == "win32":
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
 # Import logika utama dari src/app.py
-from app import main_menu
+from src.app import main_menu
 
 if __name__ == "__main__":
     from rich.console import Console

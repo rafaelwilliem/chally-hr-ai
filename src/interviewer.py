@@ -13,13 +13,23 @@ import config
 console = Console()
 
 class AIInterviewer:
-    def __init__(self):
+    def __init__(self, system_instruction: str = ""):
         # Inisialisasi API Gemini
         if not config.GEMINI_API_KEY:
             raise ValueError("API Key tidak ditemukan. Pastikan sudah diatur di file .env")
         
         genai.configure(api_key=config.GEMINI_API_KEY)
-        self.model = genai.GenerativeModel(config.MODEL_NAME)
+        
+        # (LOGIKA AI): Inisialisasi model dengan System Instruction jika ada.
+        # Ini lebih efisien daripada mengirimnya sebagai chat message pertama.
+        if system_instruction:
+            self.model = genai.GenerativeModel(
+                model_name=config.MODEL_NAME,
+                system_instruction=system_instruction
+            )
+        else:
+            self.model = genai.GenerativeModel(config.MODEL_NAME)
+            
         self.chat_history: List[Dict[str, str]] = []
         self.session_data: Dict[str, Any] = {}
 
@@ -41,7 +51,7 @@ class AIInterviewer:
         # (LOGIKA AI): System Instruction sebagai 'personality' interviewer.
         # Kita masukkan JD dan CV ke dalam prompt awal untuk memberikan context penuh (RAG sederhana).
         self.system_prompt = f"""
-        Kamu adalah 'Challora', seorang Senior HR Interviewer yang profesional namun komunikatif.
+        Kamu adalah 'Chally AI', seorang Senior HR Interviewer yang profesional namun komunikatif.
         Tugasmu adalah melakukan screening awal terhadap kandidat berdasarkan Job Description (JD) dan CV di bawah ini.
         
         [JOB DESCRIPTION]
@@ -58,20 +68,30 @@ class AIInterviewer:
         5. Gunakan Bahasa Indonesia yang formal namun tetap relaks.
         """
         
-        # Inisialisasi chat dengan system prompt
+        # Re-initialize model with system instruction now that we have JD and CV
+        self.model = genai.GenerativeModel(
+            model_name=config.MODEL_NAME,
+            system_instruction=self.system_prompt
+        )
+        
+        # Inisialisasi chat kosong
         self.chat = self.model.start_chat(history=[])
-        # (LOGIKA AI): Mengirim instruksi sistem diawal agar chat state memahami perannya.
-        self.chat.send_message(self.system_prompt)
 
     def start_chat_loop(self) -> None:
         """Looping percakapan interview."""
         console.print(Panel("[bold green]Interview Dimulai. Ketik 'exit' atau 'selesai' untuk berhenti.[/bold green]"))
         
-        # (LOGIKA AI): Mengambil pesan sapaan awal dari AI setelah diberikan instruksi sistem.
-        # Kita panggil sekali tanpa input untuk memicu AI menyapa lebih dulu.
-        ai_response = self.chat.send_message("Silakan sapa kandidat dan mulai interview.")
-        console.print(f"\n[bold cyan]Challora:[/bold cyan] {ai_response.text}")
-        self.chat_history.append({"role": "challora", "content": ai_response.text})
+        # (LOGIKA AI): Mengambil pesan sapaan awal dari AI.
+        # Kita gunakan console.status agar user tahu program sedang bekerja (tidak hang).
+        try:
+            with console.status("[bold cyan]Menghubungkan ke Challora AI...[/bold cyan]"):
+                ai_response = self.chat.send_message("Silakan sapa kandidat dan mulai interview.")
+            
+            console.print(f"\n[bold cyan]Challora:[/bold cyan] {ai_response.text}")
+            self.chat_history.append({"role": "challora", "content": ai_response.text})
+        except Exception as e:
+            console.print(f"[bold red]Gagal mendapatkan sapaan awal:[/bold red] {str(e)}")
+            return
 
         while True:
             user_input = console.input("\n[bold yellow]Anda:[/bold yellow] ").strip()
@@ -128,7 +148,9 @@ def start_interview():
             console.print("[bold red]File JD atau CV contoh tidak ditemukan di folder data/context/.[/bold red]")
             return
 
-        interviewer.load_context(jd_file, cv_file)
+        with console.status("[bold yellow]Memuat Konteks (JD & CV)...[/bold yellow]"):
+            interviewer.load_context(jd_file, cv_file)
+        
         interviewer.start_chat_loop()
         
     except Exception as e:
