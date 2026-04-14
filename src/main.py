@@ -1,5 +1,9 @@
 import sys
 import os
+
+# Memastikan terminal menggunakan encoding UTF-8 untuk karakter banner
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding='utf-8')
 from typing import NoReturn
 from rich.console import Console
 from rich.panel import Panel
