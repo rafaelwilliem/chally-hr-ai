@@ -1,0 +1,14 @@
+JOB TITLE: Senior Python Developer
+Location: Remote (Global)
+
+RESPONSIBILITIES:
+- Architect and maintain scalable backend systems using Python and FastAPI.
+- Implement AI-driven features using LLMs (Gemini, GPT).
+- Write clean, maintainable, and well-tested code.
+- Collaborate with frontend engineers and product managers.
+
+QUALIFICATIONS:
+- 5+ years of experience in Python development.
+- Strong understanding of asynchronous programming.
+- Experience with Google Cloud Platform and AI APIs.
+- Excellent communication skills in English and Indonesian.
