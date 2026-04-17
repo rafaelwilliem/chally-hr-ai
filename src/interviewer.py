@@ -84,11 +84,11 @@ class AIInterviewer:
         # (LOGIKA AI): Mengambil pesan sapaan awal dari AI.
         # Kita gunakan console.status agar user tahu program sedang bekerja (tidak hang).
         try:
-            with console.status("[bold cyan]Menghubungkan ke Challora AI...[/bold cyan]"):
+            with console.status("[bold cyan]Menghubungkan ke Chally AI...[/bold cyan]"):
                 ai_response = self.chat.send_message("Silakan sapa kandidat dan mulai interview.")
             
-            console.print(f"\n[bold cyan]Challora:[/bold cyan] {ai_response.text}")
-            self.chat_history.append({"role": "challora", "content": ai_response.text})
+            console.print(f"\n[bold cyan]Chally:[/bold cyan] {ai_response.text}")
+            self.chat_history.append({"role": "chally", "content": ai_response.text})
         except Exception as e:
             console.print(f"[bold red]Gagal mendapatkan sapaan awal:[/bold red] {str(e)}")
             return
@@ -105,11 +105,11 @@ class AIInterviewer:
             # Objek 'self.chat' menyimpan state percakapan sehingga kita tidak perlu 
             # mengirim semua history secara manual setiap kali (menghemat token dan kode).
             try:
-                with console.status("[italic]Challora sedang berpikir...[/italic]"):
+                with console.status("[italic]Chally sedang berpikir...[/italic]"):
                     response = self.chat.send_message(user_input)
                 
-                console.print(f"\n[bold cyan]Challora:[/bold cyan] {response.text}")
-                self.chat_history.append({"role": "challora", "content": response.text})
+                console.print(f"\n[bold cyan]Chally:[/bold cyan] {response.text}")
+                self.chat_history.append({"role": "chally", "content": response.text})
                 
             except Exception as e:
                 console.print(f"[bold red]Error dari API:[/bold red] {str(e)}")

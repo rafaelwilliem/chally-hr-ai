@@ -54,7 +54,7 @@ def read_transcript(filename: str):
     
     for msg in data.get("conversation", []):
         role = msg.get("role", "Unknown").capitalize()
-        color = "cyan" if role == "Challora" else "yellow"
+        color = "cyan" if role in ["Chally", "Challora"] else "yellow"
         console.print(Panel(msg.get("content", ""), title=f"[{color}]{role}[/{color}]", border_style=color, padding=(0, 1)))
     
     input("\nTekan Enter untuk kembali ke menu...")

@@ -1,14 +1,12 @@
-JOB TITLE: Senior Python Developer
-Location: Remote (Global)
+Role: Senior Backend Engineer (Python)
+Responsibilities:
+- Build and maintain high-scale microservices.
+- Mentor junior developers.
+- Optimize database performance.
+- Collaborate with frontend teams.
 
-RESPONSIBILITIES:
-- Architect and maintain scalable backend systems using Python and FastAPI.
-- Implement AI-driven features using LLMs (Gemini, GPT).
-- Write clean, maintainable, and well-tested code.
-- Collaborate with frontend engineers and product managers.
-
-QUALIFICATIONS:
-- 5+ years of experience in Python development.
-- Strong understanding of asynchronous programming.
-- Experience with Google Cloud Platform and AI APIs.
-- Excellent communication skills in English and Indonesian.
+Requirements:
+- 5+ years of experience with Python.
+- Strong knowledge of FastAPI or Django.
+- Experience with Cloud (AWS/GCP) and Docker.
+- Proven track record of scaling systems.

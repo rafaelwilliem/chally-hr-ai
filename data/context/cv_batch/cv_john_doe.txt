@@ -1,0 +1,6 @@
+John Doe
+Senior Software Engineer
+Experience: 8 years in Python, Django, React.
+Worked at Tech Solutions Inc. Managed a team of 5.
+Skills: Python, SQL, AWS, Docker.
+Project: Scaled a microservices architecture to handle 1M users.
