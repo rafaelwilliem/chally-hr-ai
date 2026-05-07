@@ -13,7 +13,7 @@ CONTEXT_DIR = os.path.join(DATA_DIR, "context")
 
 # Konfigurasi AI
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-MODEL_NAME = "gemini-1.5-flash"
+MODEL_NAME = os.getenv("MODEL_NAME", "gemini-2.0-flash")
 
 _client = None
 
