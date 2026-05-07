@@ -1,0 +1,6 @@
+Jane Smith
+Backend Developer
+Experience: 3 years.
+Skills: Python, FastAPI, PostgreSQL.
+Worked at Startup Co. Built REST APIs.
+Education: CS Degree from ABC University.

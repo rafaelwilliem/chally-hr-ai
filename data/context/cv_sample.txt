@@ -1,0 +1,17 @@
+NAME: Budi Santoso
+TITLE: Mid-Senior Backend Engineer
+
+EXPERIENCE:
+- Python Developer at TechCorp (2020 - Present)
+  * Built microservices using Django and Flask.
+  * Integrated OpenAI API for customer service chatbot.
+- Junior Developer at StartUpID (2018 - 2020)
+  * Developed web applications using PHP and Python.
+
+SKILLS:
+- Languages: Python, JavaScript, SQL.
+- Frameworks: FastAPI, Django, React.
+- Tools: Docker, Git, Google Cloud.
+
+EDUCATION:
+- B.Sc. in Computer Science, Universitas Indonesia.

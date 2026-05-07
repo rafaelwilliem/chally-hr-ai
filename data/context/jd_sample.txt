@@ -1,0 +1,12 @@
+Role: Senior Backend Engineer (Python)
+Responsibilities:
+- Build and maintain high-scale microservices.
+- Mentor junior developers.
+- Optimize database performance.
+- Collaborate with frontend teams.
+
+Requirements:
+- 5+ years of experience with Python.
+- Strong knowledge of FastAPI or Django.
+- Experience with Cloud (AWS/GCP) and Docker.
+- Proven track record of scaling systems.
