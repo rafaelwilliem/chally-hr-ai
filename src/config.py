@@ -12,7 +12,7 @@ TRANSCRIPT_DIR = os.path.join(DATA_DIR, "transcripts")
 CONTEXT_DIR = os.path.join(DATA_DIR, "context")
 
 # Konfigurasi AI
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
 MODEL_NAME = "gemini-1.5-flash"
 
 _client = None
