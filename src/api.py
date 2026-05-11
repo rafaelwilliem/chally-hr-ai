@@ -51,6 +51,11 @@ def get_assistant() -> ChallyAssistantV2:
     return assistant
 
 
+@app.get("/")
+def root() -> Dict[str, str]:
+    return {"status": "ok", "service": "CHALLY HR AI", "version": "1.0.0"}
+
+
 @app.get("/health")
 def health() -> Dict[str, str]:
     return {"status": "ok"}
