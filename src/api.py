@@ -73,6 +73,23 @@ def cv_rate(req: BaseAiRequest) -> Dict[str, Any]:
         raise HTTPException(status_code=500, detail=err(request_id, "AI_RATE_FAILED", str(exc), True))
 
 
+@app.post("/ai/candidate/summary")
+def candidate_summary(req: BaseAiRequest) -> Dict[str, Any]:
+    """Summarize candidate with pros, cons, and recommendation (HR Feature)."""
+    started_at = time.time()
+    request_id = req.request_id or str(uuid.uuid4())
+    try:
+        payload = req.payload
+        data = get_assistant().summarize_candidate(
+            job_description=payload.get("job_description", ""),
+            candidate_name=payload.get("candidate_name", "Candidate"),
+            candidate_profile=payload.get("candidate_profile", {}),
+        )
+        return ok(request_id, data, started_at)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=err(request_id, "AI_SUMMARY_FAILED", str(exc), True))
+
+
 @app.post("/ai/jobs/recommend")
 def jobs_recommend(req: JobsRecommendRequest) -> Dict[str, Any]:
     """Recommend jobs for user (User Feature)."""
