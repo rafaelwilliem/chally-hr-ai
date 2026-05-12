@@ -61,6 +61,20 @@ def health() -> Dict[str, str]:
     return {"status": "ok"}
 
 
+@app.get("/ping-ai")
+def ping_ai() -> Dict[str, Any]:
+    """Quick test: sends a minimal prompt to Groq and returns latency."""
+    import time
+    started = time.time()
+    try:
+        assistant = get_assistant()
+        result = assistant._chat("Reply with just the word: OK")
+        latency = round((time.time() - started) * 1000)
+        return {"status": "ok", "groq_response": result.strip(), "latency_ms": latency}
+    except Exception as e:
+        return {"status": "error", "message": str(e), "latency_ms": round((time.time() - started) * 1000)}
+
+
 @app.post("/ai/cv/rate")
 def cv_rate(req: BaseAiRequest) -> Dict[str, Any]:
     """Rate candidate fit (HR Feature)."""
