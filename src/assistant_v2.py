@@ -17,9 +17,9 @@ class ChallyAssistantV2:
         response = self.client.chat.completions.create(
             model=self.model_name,
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.3,
-            max_tokens=1024,  # Cap output to prevent slow long responses
-            timeout=30,       # 30s hard timeout on Groq API call
+            temperature=0.5,
+            max_tokens=2048,
+            timeout=30,
         )
         return response.choices[0].message.content or ""
 
@@ -40,30 +40,104 @@ class ChallyAssistantV2:
 
     def rate_candidate(self, job_description: str, candidate_name: str, candidate_profile: Dict[str, Any]) -> Dict[str, Any]:
         job_title        = candidate_profile.get("job_title", "")
-        job_skills       = candidate_profile.get("job_required_skills", [])
+        job_skills_raw   = candidate_profile.get("job_required_skills", [])
+        job_skills       = job_skills_raw if isinstance(job_skills_raw, list) else []
         experience_level = candidate_profile.get("job_experience_level", "")
         min_education    = candidate_profile.get("job_min_education", "")
 
-        prompt = f"""You are Chally AI, a senior HR specialist. Score this candidate's fit for the job using the rubric below. Be honest, do not inflate scores. RESPOND IN ENGLISH ONLY.
+        # Build a clean, readable candidate profile for the prompt
+        candidate_parts = []
 
-JOB: {job_title} | Level: {experience_level} | Min Education: {min_education}
+        # Skills
+        skills_raw = candidate_profile.get("skills", [])
+        if isinstance(skills_raw, str):
+            skills_raw = [s.strip() for s in skills_raw.split(",") if s.strip()]
+        if skills_raw:
+            candidate_parts.append(f"SKILLS: {', '.join(skills_raw)}")
+        else:
+            candidate_parts.append("SKILLS: Not listed")
+
+        # Education
+        edu = candidate_profile.get("education", {})
+        if isinstance(edu, dict) and edu:
+            edu_parts = []
+            for k in ["level", "major", "university", "graduation_year"]:
+                v = edu.get(k, "")
+                if v:
+                    edu_parts.append(f"{k.title()}: {v}")
+            if edu_parts:
+                candidate_parts.append("EDUCATION: " + " | ".join(edu_parts))
+
+        # Work experience
+        experiences = candidate_profile.get("work_experiences", [])
+        if experiences and isinstance(experiences, list):
+            exp_lines = []
+            for exp in experiences[:5]:  # max 5 entries
+                years = f"{exp.get('year_start', '')}-{exp.get('year_end', 'now')}"
+                title = exp.get("title", "")
+                company = exp.get("company_name", "")
+                desc = exp.get("description", "")[:200]
+                exp_lines.append(f"  - [{years}] {title} at {company}: {desc}")
+            if exp_lines:
+                candidate_parts.append("WORK EXPERIENCE:\n" + "\n".join(exp_lines))
+
+        # Achievements
+        achievements = candidate_profile.get("achievements", [])
+        if achievements and isinstance(achievements, list):
+            ach_lines = []
+            for ach in achievements[:5]:
+                title = ach.get("title", "")
+                level = ach.get("level", "")
+                typ = ach.get("type", "")
+                ach_lines.append(f"  - {title} ({level} {typ})")
+            if ach_lines:
+                candidate_parts.append("ACHIEVEMENTS:\n" + "\n".join(ach_lines))
+
+        # Org experience
+        orgs = candidate_profile.get("organizational_experiences", [])
+        if orgs and isinstance(orgs, list):
+            org_lines = []
+            for org in orgs[:3]:
+                org_lines.append(f"  - {org.get('position', '')} at {org.get('organization', org.get('organization_name', ''))}")
+            if org_lines:
+                candidate_parts.append("ORGANIZATIONS:\n" + "\n".join(org_lines))
+
+        # Summary
+        summary = candidate_profile.get("summary", "")
+        if summary:
+            candidate_parts.append(f"SUMMARY: {summary}")
+
+        candidate_text = "\n".join(candidate_parts) or "(No profile data provided)"
+
+        prompt = f"""You are Chally AI, a senior HR specialist evaluating candidates for job openings. Score honestly — do NOT inflate scores.
+
+JOB: {job_title}
+Level: {experience_level or 'Not specified'}
+Min Education: {min_education or 'Not specified'}
 Required Skills: {", ".join(job_skills) if job_skills else "Not specified"}
-Description: {job_description[:800]}
+Job Description: {job_description[:500]}
 
 CANDIDATE: {candidate_name}
-{json.dumps(candidate_profile, ensure_ascii=False)}
+{candidate_text}
 
 SCORING RUBRIC (100 pts total):
-- skills_match (0-30): coverage of required skills, partial credit for adjacent skills
-- work_experience (0-25): relevance of past roles, seniority match, years of experience
-- education (0-15): meets min education requirement, field relevance
-- achievements (0-15): awards, certs, leadership, org experience
-- profile_quality (0-15): summary clarity, profile completeness
+- skills_match (0-30): coverage of required skills. Partial credit for adjacent/related skills. 0 if no overlap.
+- work_experience (0-25): relevance and seniority of past roles to the job. Years of relevant experience matter.
+- education (0-15): meets education requirement. Field relevance bonus.
+- achievements (0-15): awards, certifications, leadership, organizational roles relevant to job.
+- profile_quality (0-15): clarity and completeness of the profile.
 
-Rules: 70+ = strong candidate. Below 40 = poor fit. core_strength = one short phrase IN ENGLISH. confidence = 0.0-1.0.
+Rules:
+- A candidate with matching skills AND relevant experience should score 60-80
+- A strong candidate with excellent experience should score 70-90
+- Only score 90+ for outstanding, highly relevant candidates
+- Score 20 or below only for completely wrong candidates (wrong field entirely)
+- confidence is your certainty: 0.7-0.95 for well-described profiles, 0.4-0.6 for thin profiles
+- core_strength: one short phrase in English describing the candidate's strongest asset
+- Return ONLY valid JSON, no markdown, no explanation:
 
-Return ONLY valid JSON, no markdown:
 {{"score_total":0,"score_breakdown":{{"skills_match":0,"work_experience":0,"education":0,"achievements":0,"profile_quality":0}},"reasoning":"2-3 sentence assessment in English","technical_reasoning":["point 1","point 2","point 3"],"core_strength":"phrase in English","confidence":0.0}}"""
+
         text = self._chat(prompt)
         payload = self._extract_json(text, default={}) or {}
         if not isinstance(payload, dict):
