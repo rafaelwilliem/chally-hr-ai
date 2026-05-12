@@ -18,6 +18,8 @@ class ChallyAssistantV2:
             model=self.model_name,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3,
+            max_tokens=1024,  # Cap output to prevent slow long responses
+            timeout=30,       # 30s hard timeout on Groq API call
         )
         return response.choices[0].message.content or ""
 
