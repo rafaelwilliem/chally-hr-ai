@@ -40,7 +40,24 @@ def err(request_id: str, code: str, message: str, retryable: bool = False) -> Di
     }
 
 
-app = FastAPI(title="CHALLY HR AI API", version="1.0.9")
+import os
+import subprocess
+
+def get_git_version() -> str:
+    """Read the most recent git tag or fallback to 'dev'."""
+    try:
+        tag = subprocess.check_output(
+            ["git", "describe", "--tags", "--abbrev=0"],
+            stderr=subprocess.DEVNULL,
+            text=True,
+        ).strip()
+        return tag.lstrip("v")  # remove 'v' prefix if present
+    except Exception:
+        return "1.0.0"
+
+__version__ = get_git_version()
+
+app = FastAPI(title="CHALLY HR AI API", version=__version__)
 assistant: ChallyAssistantV2 | None = None
 
 
