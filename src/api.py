@@ -40,7 +40,7 @@ def err(request_id: str, code: str, message: str, retryable: bool = False) -> Di
     }
 
 
-app = FastAPI(title="CHALLY HR AI API", version="1.0.0")
+app = FastAPI(title="CHALLY HR AI API", version="1.0.9")
 assistant: ChallyAssistantV2 | None = None
 
 
